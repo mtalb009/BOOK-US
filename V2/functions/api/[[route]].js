@@ -52,13 +52,13 @@ async function availability(request, env) {
   const cfg = config(env, who);
   if (to < Date.now() || from > maxDate(cfg)) return json({ timezone: TZ, month, days: {} }, 200, 60);
 
-  const busy = await freeBusy(env, who, from, to);
+  const busy = isDemo(env) ? demoBusy(y, m, daysInMonth) : await freeBusy(env, who, from, to);
   const days = {};
   for (let d = 1; d <= daysInMonth; d++) {
     const slots = daySlots(cfg, y, m, d, busy);
     if (slots.length) days[`${month}-${pad(d)}`] = slots;
   }
-  return json({ timezone: TZ, month, callMinutes: cfg.callMinutes, days }, 200, 60);
+  return json({ timezone: TZ, month, callMinutes: cfg.callMinutes, days, demo: isDemo(env) }, 200, 60);
 }
 
 async function book(request, env) {
@@ -82,6 +82,12 @@ async function book(request, env) {
   const [hh, mm] = time.split(':').map(Number);
   const start = parisToUtc(y, m, d, hh, mm);
   const end = start + cfg.callMinutes * 60000;
+
+  if (isDemo(env)) {
+    // Demo mode: no Google call, nothing is created.
+    if (!daySlots(cfg, y, m, d, demoBusy(y, m, new Date(Date.UTC(y, m, 0)).getUTCDate())).includes(time)) return json({ error: 'slot_unavailable' }, 409);
+    return json({ ok: true, demo: true, start: new Date(start).toISOString(), end: new Date(end).toISOString(), meetLink: null }, 201);
+  }
 
   // Re-check against the live calendar right before booking.
   const busy = await freeBusy(env, who, parisToUtc(y, m, d, 0, 0), parisToUtc(y, m, d, 23, 59) + 60000);
@@ -164,6 +170,26 @@ async function freeBusy(env, who, from, to) {
   const cal = data.calendars?.[calendarId];
   if (!cal || cal.errors?.length) throw googleError('freeBusy', 502, JSON.stringify(cal?.errors || data));
   return (cal.busy || []).map(b => ({ start: Date.parse(b.start), end: Date.parse(b.end) }));
+}
+
+/* ---------------- Demo mode ---------------- */
+
+// DEMO_MODE = "true" (wrangler.toml): plausible fake busy times, no Google access needed.
+function isDemo(env) { return String(env.DEMO_MODE || '').toLowerCase() === 'true'; }
+function demoBusy(y, m, daysInMonth) {
+  const busy = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    for (let h = 9; h < 18; h++) {
+      for (const mi of [0, 30]) {
+        const x = Math.sin((y * 372 + m * 31 + d) * 9301 + (h * 2 + mi / 30) * 49297) * 233280;
+        if (x - Math.floor(x) < 0.4) {
+          const s = parisToUtc(y, m, d, h, mi);
+          busy.push({ start: s, end: s + 30 * 60000 });
+        }
+      }
+    }
+  }
+  return busy;
 }
 
 /* ---------------- Google auth ---------------- */

@@ -4,6 +4,8 @@ compatibility_date = "2026-10-01"
 
 # Non-secret settings (secrets go in the Cloudflare dashboard or `wrangler pages secret put`).
 [vars]
+# "true" = simulated slots, no Google needed, no real booking. Set to "false" once Google is connected.
+DEMO_MODE = "true"
 # Agenda (email Google) de chaque interlocuteur — à compléter.
 CALENDAR_PARIS = ""
 CALENDAR_USA = ""
