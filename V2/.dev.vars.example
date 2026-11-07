@@ -1,0 +1,17 @@
+# Copier en .dev.vars pour tester en local (`wrangler pages dev`). Ne jamais committer .dev.vars.
+# En production : `wrangler pages secret put NOM` ou Cloudflare > Pages > Settings > Variables.
+
+CALENDAR_PARIS=anne-laure@exemple.com
+CALENDAR_USA=chloe@exemple.com
+CALENDAR_ITALY=ludovica@exemple.com
+
+# --- Option 1 : compte de service + délégation au niveau du domaine (Google Workspace) ---
+GOOGLE_SA_EMAIL=book-us@mon-projet.iam.gserviceaccount.com
+GOOGLE_SA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# --- Option 2 : OAuth, un refresh token par interlocuteur (si pas d'accès admin Workspace) ---
+# GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
+# GOOGLE_CLIENT_SECRET=xxxx
+# GOOGLE_REFRESH_TOKEN_PARIS=1//xxxx
+# GOOGLE_REFRESH_TOKEN_USA=1//xxxx
+# GOOGLE_REFRESH_TOKEN_ITALY=1//xxxx

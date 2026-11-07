@@ -1,0 +1,25 @@
+*
+!.gitignore
+!html/
+!html/saywho-book-us.html
+!html/index.html
+!html/assets/
+!html/assets/**
+!tools/
+!tools/**
+.DS_Store
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
+
+# V2 (Cloudflare Pages)
+!V2/
+!V2/**
+V2/.dev.vars*
+!V2/.dev.vars.example
+V2/.wrangler
+**/.DS_Store

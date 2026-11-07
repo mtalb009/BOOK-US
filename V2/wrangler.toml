@@ -1,0 +1,19 @@
+name = "saywho-book-us"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-10-01"
+
+# Non-secret settings (secrets go in the Cloudflare dashboard or `wrangler pages secret put`).
+[vars]
+# Agenda (email Google) de chaque interlocuteur — à compléter.
+CALENDAR_PARIS = ""
+CALENDAR_USA = ""
+CALENDAR_ITALY = ""
+# Plages d'ouverture, heure de Paris. Surcharge possible par interlocuteur : WORK_HOURS_USA, WORK_DAYS_ITALY…
+WORK_HOURS = "09:00-13:00,14:00-18:00"
+WORK_DAYS = "1,2,3,4,5"
+CALL_MINUTES = "15"
+SLOT_STEP_MINUTES = "30"
+MIN_NOTICE_HOURS = "12"
+MAX_MONTHS_AHEAD = "6"
+# Uniquement si la page est servie depuis un autre domaine que l'API, ex. "https://www.saywhomedia.com"
+ALLOWED_ORIGINS = ""
